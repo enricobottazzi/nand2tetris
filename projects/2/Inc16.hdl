@@ -3,13 +3,46 @@
 // by Nisan and Schocken, MIT Press.
 // File name: projects/2/Inc16.hdl
 /**
- * 16-bit incrementer:
- * out = in + 1
- */
+* 16-bit incrementer:
+* out = in + 1
+* The naive way to implement this would be to perform a fullAdded bewtween in and 1. But we can do better.
+* The first operation is to flip the lsb of in. This can be done by negating the lsb.
+* If the lsb was 0, we no longer flip any bits of in. 
+* If the lsb was 1, we continue to flip the next bit. As soon as we find a bit that is 0, we perform the last flip and we are done.
+*/
 CHIP Inc16 {
     IN in[16];
     OUT out[16];
 
     PARTS:
-    //// Replace this comment with your code.
+    Not(in=in[0], out=out[0]);
+    Xor(a=in[1], b=in[0], out=out[1]); // If lsb (in[0]) is 1, flip it, else do nothing
+    And(a=in[1], b=in[0], out=flipNext1); // If in[0] was 1 and in[1] is 1, we need to keep flipping bits
+    Xor(a=in[2], b=flipNext1, out=out[2]); 
+    And(a=in[2], b=flipNext1, out=flipNext2);
+    Xor(a=in[3], b=flipNext2, out=out[3]);
+    And(a=in[3], b=flipNext2, out=flipNext3);
+    Xor(a=in[4], b=flipNext3, out=out[4]);
+    And(a=in[4], b=flipNext3, out=flipNext4);
+    Xor(a=in[5], b=flipNext4, out=out[5]);
+    And(a=in[5], b=flipNext4, out=flipNext5);
+    Xor(a=in[6], b=flipNext5, out=out[6]);
+    And(a=in[6], b=flipNext5, out=flipNext6);
+    Xor(a=in[7], b=flipNext6, out=out[7]);
+    And(a=in[7], b=flipNext6, out=flipNext7);
+    Xor(a=in[8], b=flipNext7, out=out[8]);
+    And(a=in[8], b=flipNext7, out=flipNext8);
+    Xor(a=in[9], b=flipNext8, out=out[9]);
+    And(a=in[9], b=flipNext8, out=flipNext9);
+    Xor(a=in[10], b=flipNext9, out=out[10]);
+    And(a=in[10], b=flipNext9, out=flipNext10);
+    Xor(a=in[11], b=flipNext10, out=out[11]);
+    And(a=in[11], b=flipNext10, out=flipNext11);
+    Xor(a=in[12], b=flipNext11, out=out[12]);
+    And(a=in[12], b=flipNext11, out=flipNext12);
+    Xor(a=in[13], b=flipNext12, out=out[13]);
+    And(a=in[13], b=flipNext12, out=flipNext13);
+    Xor(a=in[14], b=flipNext13, out=out[14]);
+    And(a=in[14], b=flipNext13, out=flipNext14);
+    Xor(a=in[15], b=flipNext14, out=out[15]);
 }

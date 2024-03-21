@@ -3,19 +3,20 @@
 // by Nisan and Schocken, MIT Press.
 // File name: projects/2/ALU.hdl
 /**
- * ALU (Arithmetic Logic Unit):
- * Computes out = one of the following functions:
- *                0, 1, -1,
- *                x, y, !x, !y, -x, -y,
- *                x + 1, y + 1, x - 1, y - 1,
- *                x + y, x - y, y - x,
- *                x & y, x | y
- * on the 16-bit inputs x, y,
- * according to the input bits zx, nx, zy, ny, f, no.
- * In addition, computes the two output bits:
- * if (out == 0) zr = 1, else zr = 0
- * if (out < 0)  ng = 1, else ng = 0
- */
+* ALU (Arithmetic Logic Unit):
+* Computes out = one of the following functions:
+*                0, 1, -1,
+*                x, y, !x, !y, -x, -y,
+*                x + 1, y + 1, x - 1, y - 1,
+*                x + y, x - y, y - x,
+*                x & y, x | y
+* on the 16-bit inputs x, y,
+* according to the input bits zx, nx, zy, ny, f, no.
+* In addition, computes the two output bits:
+* if (out == 0) zr = 1, else zr = 0
+* if (out < 0)  ng = 1, else ng = 0
+*/
+
 // Implementation: Manipulates the x and y inputs
 // and operates on the resulting values, as follows:
 // if (zx == 1) sets x = 0        // 16-bit constant
@@ -25,6 +26,34 @@
 // if (f == 1)  sets out = x + y  // integer 2's complement addition
 // if (f == 0)  sets out = x & y  // bitwise and
 // if (no == 1) sets out = !out   // bitwise not
+
+// Strategy: 
+// 1. Zero the x input
+// This can be done by using a 16-bit Mux16 chip with the following inputs:
+// a = x, b = false, sel = zx
+
+// 2. Negate the x input
+// This can be done by using a 16-bit Mux16 chip with the following inputs:
+// a = x, b = !x, sel = nx
+
+// 3. Zero the y input
+// This can be done by using a 16-bit Mux16 chip with the following inputs:
+// a = y, b = false, sel = zy
+
+// 4. Negate the y input
+// This can be done by using a 16-bit Mux16 chip with the following inputs:
+// a = y, b = !y, sel = ny
+
+// 5. If(f == 1) out = x + y, if (f == 0)  sets out = x & y
+// This can be done by using a 16-bit Mux16 chip with the following inputs:
+// a = x & y, b = x + y, sel = f
+
+// 6. If (no == 1) sets out = !out
+// This can be done by using a 16-bit Mux16 chip with the following inputs:
+// a = out, b=!out, sel=no
+
+// 7. Compute the zero output
+// 
 
 CHIP ALU {
     IN  
@@ -41,5 +70,15 @@ CHIP ALU {
         ng;      // if (out < 0)  equals 1, else 0
 
     PARTS:
-    //// Replace this comment with your code.
+    Mux16(a=x, b=false, sel=zx, out=xAfterZx);
+    Not16(in=xAfterZx, out=notXAfterZx);
+    Mux16(a=xAfterZx, b=notXAfterZx, sel=nx, out=xAfterNx);
+    Mux16(a=y, b=false, sel=zy, out=yAfterZy);
+    Not16(in=yAfterZy, out=notYAfterZy);
+    Mux16(a=yAfterZy, b=notYAfterZy, sel=ny, out=yAfterNy);
+    Add16(a=xAfterNx, b=yAfterNy, out=xPlusY);
+    And16(a=xAfterNx, b=yAfterNy, out=xAndY);
+    Mux16(a=xAndY, b=xPlusY, sel=f, out=outAfterF);
+    Not16(in=outAfterF, out=notOutAfterF);
+    Mux16(a=outAfterF, b=notOutAfterF, sel=no, out=out);
 }

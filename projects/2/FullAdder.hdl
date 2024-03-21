@@ -3,13 +3,29 @@
 // by Nisan and Schocken, MIT Press.
 // File name: projects/2/FullAdder.hdl
 /**
- * Computes the sum of three bits.
- */
+* Computes the sum of three bits.
+* The truth table is the following 
+* a | b | c | sum | carry
+* 0 | 0 | 0 |  0  |  0
+* 0 | 0 | 1 |  1  |  0
+* 0 | 1 | 0 |  1  |  0
+* 0 | 1 | 1 |  0  |  1
+* 1 | 0 | 0 |  1  |  0
+* 1 | 0 | 1 |  0  |  1
+* 1 | 1 | 0 |  0  |  1
+* 1 | 1 | 1 |  1  |  1
+*
+* This can be viewed as an half adder between c and a that returns sumA and carryA
+* and then a further half adder between sumA and b that returns sum and carryB
+* The final carry is the XOR between carryA and carryB
+*/
 CHIP FullAdder {
     IN a, b, c;  // 1-bit inputs
     OUT sum,     // Right bit of a + b + c
         carry;   // Left bit of a + b + c
 
     PARTS:
-    //// Replace this comment with your code.
+    HalfAdder(a=a, b=b, sum=sumA, carry=carryA);
+    HalfAdder(a=sumA, b=c, sum=sum, carry=carryB);
+    Xor(a=carryA, b=carryB, out=carry);
 }

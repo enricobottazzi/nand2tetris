@@ -3,13 +3,23 @@
 // by Nisan and Schocken, MIT Press.
 // File name: projects/2/HalfAdder.hdl
 /**
- * Computes the sum of two bits.
- */
+* Computes the sum of two bits.
+* The truth table is the following
+*    a  | b | sum | carry
+*    ---|---|-----|------
+*    0  | 0 |  0  |  0
+*    0  | 1 |  1  |  0
+*    1  | 0 |  1  |  0
+*    1  | 1 |  0  |  1
+* 
+* You can see that the sum is the XOR of a and b, and the carry is the AND of a and b.
+*/
 CHIP HalfAdder {
     IN a, b;    // 1-bit inputs
     OUT sum,    // Right bit of a + b 
         carry;  // Left bit of a + b
 
     PARTS:
-    //// Replace this comment with your code.
+    Xor(a=a, b=b, out=sum);
+    And(a=a, b=b, out=carry);
 }
