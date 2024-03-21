@@ -1,0 +1,33 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/1/DMux4Way.hdl
+/**
+* 4-way demultiplexor:
+* [a, b, c, d] = [in, 0, 0, 0] if sel = 00
+*                [0, in, 0, 0] if sel = 01
+*                [0, 0, in, 0] if sel = 10
+*                [0, 0, 0, in] if sel = 11
+*
+* If sel[1] is 0, then the out[0, 1] is equal to the DMux output of in and sel[0]
+* This can be express by the conditions: 
+* - out[0] = NOT(sel[1]) AND DMux(in, sel[0]).a
+* - out[1] = NOT(sel[1]) AND DMux(in, sel[0]).b
+* If sel[1] is 1, then the out[2, 3] is equal to the DMux output of in and sel[0]
+* This can be express by the conditions:
+* - out[2] = sel[1] AND DMux(in, sel[0]).a
+* - out[3] = sel[1] AND DMux(in, sel[0]).b
+*/
+CHIP DMux4Way {
+    IN in, sel[2];
+    OUT a, b, c, d;
+
+    PARTS:
+    Not(in=sel[1], out=notSel1);
+    DMux(in=in, sel=sel[0], a=dMuxA, b=dMuxB);
+    And(a=notSel1, b=dMuxA, out=a);
+    And(a=notSel1, b=dMuxB, out=b);
+    DMux(in=in, sel=sel[0], a=dMuxC, b=dMuxD);
+    And(a=sel[1], b=dMuxC, out=c);
+    And(a=sel[1], b=dMuxD, out=d);
+}

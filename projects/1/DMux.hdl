@@ -1,0 +1,38 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/1/DMux.hdl
+/**
+* Demultiplexor:
+* [a, b] = [in, 0] if sel = 0
+*          [0, in] if sel = 1
+* Truth table:
+* in | sel | a | b
+* 0  |  0  | 0 | 0
+* 0  |  1  | 0 | 0
+* 1  |  0  | 1 | 0
+* 1  |  1  | 0 | 1
+* The third row condition can be expressed as a = in AND NOT sel
+* The truth table can be expressed as 
+* in | sel | a | b
+* 0  |  0  | 0 | 0
+* 0  |  1  | 0 | 0
+* 1  |  0  | 1 | 0
+* 1  |  1  | 0 | 0
+* The fourth row condition can be expressed as b = in AND sel
+* The truth table can be expressed as
+* in | sel | a | b
+* 0  |  0  | 0 | 0
+* 0  |  1  | 0 | 0
+* 1  |  0  | 0 | 0
+* 1  |  1  | 0 | 1
+*/
+CHIP DMux {
+    IN in, sel;
+    OUT a, b;
+
+    PARTS:
+    Not(in=sel, out=notSel);
+    And(a=in, b=notSel, out=a);
+    And(a=in, b=sel, out=b);
+}

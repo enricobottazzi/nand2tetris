@@ -1,0 +1,57 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/1/Mux.hdl
+/** 
+* Multiplexor:
+* if (sel = 0) out = a, else out = b
+* The truth table is the following:
+* a | b | sel | out
+* 0 | 0 | 0   | 0 
+* 0 | 1 | 0   | 0
+* 1 | 0 | 0   | 1
+* 1 | 1 | 0   | 1
+* 0 | 0 | 1   | 0
+* 0 | 1 | 1   | 1
+* 1 | 0 | 1   | 0
+* 1 | 1 | 1   | 1
+* This can be translated into the following logic:
+* if (sel = 0) out = sel or a
+* if (sel = 1) out = sel and b
+* To ensure the first condtion, you need a mechanism to disable it when sel is 1. This can be achieved by using an AND gate to a with NOT se`.
+* a AND NOT sel -> We can notice that the truth table of this gate is the following
+* a | sel | out
+* 0 | 0   | 0
+* 0 | 0   | 0
+* 1 | 0   | 1
+* 1 | 0   | 1
+* 0 | 1   | 0
+* 0 | 1   | 0
+* 1 | 1   | 0
+* 1 | 1   | 0
+* The table goes to 1 at row 3 and 4, and 0 for the rest
+* The second condition can be achieved by using an AND gate to b with sel
+* b AND sel -> We can notice that the truth table of this gate is the following
+* b | sel | out
+* 0 | 0   | 0
+* 1 | 0   | 0
+* 0 | 0   | 0
+* 1 | 0   | 0
+* 0 | 1   | 0
+* 1 | 1   | 1
+* 0 | 1   | 0
+* 1 | 1   | 1
+* The table goes to 1 at row 6 and 8, and 0 for the rest
+* The final output is the OR of the two outputs
+* (a AND NOT sel) OR (b AND sel)
+*/
+CHIP Mux {
+    IN a, b, sel;
+    OUT out;
+
+    PARTS:
+    Not(in=sel, out=notSel);
+    And(a=a, b=notSel, out=aAndNotSel);
+    And(a=b, b=sel, out=bAndSel);
+    Or(a=aAndNotSel, b=bAndSel, out=out);
+}
