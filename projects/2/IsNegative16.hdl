@@ -1,0 +1,17 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/2/IsNegative16.hdl
+/**
+* Receives a 16-bit input, and returns 1 if the input is negative, and 0 otherwise.
+*/
+
+CHIP IsNegative16 {
+
+    IN in[16];
+    OUT out;
+
+    PARTS:
+    Not(in=in[15], out=notIn15);
+    Not(in=notIn15, out=out);
+}

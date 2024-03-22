@@ -53,7 +53,10 @@
 // a = out, b=!out, sel=no
 
 // 7. Compute the zero output
-// 
+// Need to check if out == 0, this can be done by concatenating two Or8Way chips to check if the first 8 bits and the last 8 bits are all zeros and negating the result
+
+// 8. Compute the negative output
+// Need to check if out < 0, this can be done by checking if the most significant bit of the out is 1
 
 CHIP ALU {
     IN  
@@ -81,4 +84,8 @@ CHIP ALU {
     Mux16(a=xAndY, b=xPlusY, sel=f, out=outAfterF);
     Not16(in=outAfterF, out=notOutAfterF);
     Mux16(a=outAfterF, b=notOutAfterF, sel=no, out=out);
+    Mux16(a=outAfterF, b=notOutAfterF, sel=no, out=outCopy);
+    Or16Way(in=outCopy, out=notZr);
+    Not(in=notZr, out=zr);
+    IsNegative16(in=outCopy, out=ng);
 }
