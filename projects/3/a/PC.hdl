@@ -8,11 +8,21 @@
  * else if load(t):  out(t+1) = in(t)
  * else if inc(t):   out(t+1) = out(t) + 1
  * else              out(t+1) = out(t)
+ * We need to create a cascade of ifs to implement this.
  */
 CHIP PC {
-    IN in[16],inc, load, reset;
+    IN in[16], inc, load, reset;
     OUT out[16];
     
     PARTS:
-    //// Replace this comment with your code.
+    Mux16(a=preOut, b=false, sel=reset, out=partOut);
+    Not(in=reset, out=notReset);
+    And(a=notReset, b=load, out=loadIfNotReset);
+    Mux16(a=partOut, b=in, sel=loadIfNotReset, out=partOut2);
+    Not(in=load, out=notLoad);
+    And(a=notLoad, b=notReset, out=notLoadAndNotReset);
+    And(a=inc, b=notLoadAndNotReset, out=incIfNotLoadAndNotReset);
+    Inc16(in=partOut2, out=partialOutAfterInc);
+    Mux16(a=partOut2, b=partialOutAfterInc, sel=incIfNotLoadAndNotReset, out=partOut3);
+    Register(in=partOut3, load=true, out=preOut, out=out);
 }
