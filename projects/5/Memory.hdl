@@ -16,14 +16,27 @@
  * Only the upper 16K+8K+1 words of the Memory chip are used. 
  * Access to address>0x6000 is invalid. Access to any address in 
  * the range 0x4000-0x5FFF results in accessing the screen memory 
- * map. Access to address 0x6000 results in accessing the keyboard 
+ * map. Access to address 0x5fff results in accessing the keyboard 
  * memory map. The behavior in these addresses is described in the Screen
  * and Keyboard chip specifications given in the lectures and the book.
+ * Ram is in range    0b000000000000000 to 0b011111111111111
+ * Screen is in range 0b100000000000000 to 0b101111111111111
+ * Keyboard is to address ->               0b110000000000000
+ * [a, b, c, d] = [load, 0, 0, 0] if add[13,14] = 00 -> ram1 (access ram)
+ *                [0, load, 0, 0] if add[13,14] = 01 -> ram2 (access ram)
+ *                [0, 0, load, 0] if add[13,14] = 10 -> scr (access screen)
+ *                [0, 0, 0, load] if add[13,14] = 11 -> kbd (access keyboard)
+ *
  */
 CHIP Memory {
     IN in[16], load, address[15];
     OUT out[16];
 
     PARTS:
-	//// Replace this comment with your code.
+	DMux4Way (in=load,sel=address[13..14],a=ram1,b=ram2,c=scr,d=kbd);
+    Or (a=ram1,b=ram2,out=ram);
+    RAM16K (in=in,load=ram,address=address[0..13],out=ramout);
+    Screen (in=in,load=scr,address=address[0..12],out=scrout);
+    Keyboard (out=kbdout);
+    Mux4Way16 (a=ramout,b=ramout,c=scrout,d=kbdout,sel=address[13..14],out=out);
 }
